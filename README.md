@@ -58,6 +58,12 @@ Based on the application requirements, a low-pass filter would be suitable to sm
 6. **Set the Sampling Frequency** to 100 Hz.
 7. **Click "Design Filter"** to generate the filter coefficients.
 8. **Export the filter coefficients** to a C header file or copy them directly into your Proteus code.
+   #### Fdatool filter design
+
+Below is the setup of the Light Intensity Detection System filter in the fdatool:
+
+![Fdatool Filter Design](images/fdafilter.JPG)
+
 
 ### Simulating the System in Proteus
 
