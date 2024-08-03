@@ -101,8 +101,8 @@ Based on the application requirements, a low-pass filter would be suitable to sm
 - Use an operational amplifier (e.g., LM358) in a **non-inverting configuration**.
 - Connect the voltage divider output (from the LDR) to the **non-inverting input** of the op-amp.
 - Configure the gain using:
-  - $$ R_f = 90 \, kΩ $$
-  - $$ R_{in} = 10 \, kΩ $$
+  - R_f = 90 \, kΩ 
+  - R_{in} = 10 \, kΩ 
 
 ### 3. Connect the Arduino
 
@@ -156,7 +156,7 @@ The system can be simulated in the Proteus environment. The following steps outl
 
 Below is the setup of the Light Intensity Detection System in the Proteus environment:
 
-![Proteus System Setup](images/proteus_system.jpg)
+![Proteus System Setup](images/proteus_system.JPG)
 
 
 ## Limitations and Future Work
