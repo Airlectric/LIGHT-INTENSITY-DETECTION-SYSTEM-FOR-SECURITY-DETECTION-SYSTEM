@@ -1,6 +1,6 @@
 #include <LiquidCrystal.h>
 
-// Initialize the library with the new LCD pin numbers
+
 LiquidCrystal lcd(13, 12, 11, 10, 9, 8);
 
 #define AR_SIZE(x) (sizeof(x)/sizeof(x[0]))
@@ -11,17 +11,18 @@ float b[1][3] = {
 };
 
 float a[1][3] = { 
-  {1, -1.718961923044659, 0.753854433229536} // a coefficients
+  {1, -1.743260281335717420958530965435784310102, 0.77265997397853158901170900207944214344} // a coefficients
 };
 
 float g[1][1] = {
-  {0.008723127546219} // Gain
+  {0.007349923160703567166784910824617327307  } // Gain
 };
 
 const int num_sections = AR_SIZE(g); // 1 biquad filter for this case
 const int signal_length = 100;
 const int sensorPin = A0; // Analog pin for LDR
 const int buzzerPin = 7;  // Digital pin for Buzzer
+const int ledPin = 3; // Pin for the LED
 
 int i = 0; // discrete time counter
 float y_out[signal_length];
@@ -39,7 +40,7 @@ void directForm2(float x[], float b[], float a[], int n, float G, float *y) {
       y[i] = b[0] * w[1] + b[1] * w[0];
     } else {
       w[0] = G * x[i] - a[1] * w[1] - a[2] * w[0];
-      y[i] = b[0] * w[0] + b[1] * w[1] + b[2] * (i > 2 ? y[i - 2] : 0); // Use previous outputs for the second-order section
+      y[i] = b[0] * w[0] + b[1] * w[1] + b[2] * (i > 2 ? y[i - 2] : 0); 
     }
   }
 }
@@ -48,6 +49,7 @@ void setup() {
   Serial.begin(9600);
   pinMode(sensorPin, INPUT);
   pinMode(buzzerPin, OUTPUT);
+  pinMode(ledPin, OUTPUT);
 
   // Initialize the LCD
   lcd.begin(16, 2);
@@ -55,7 +57,7 @@ void setup() {
   float t;
   for (int i = 0; i < signal_length; i++) {
     t = micros() / 1.0e6;
-    x[i] = analogRead(sensorPin) / 1023.0; // Read from LDR and normalize
+    x[i] = analogRead(sensorPin) / 1023.0; // Read from LDR and normalize: Analog to digital Conversion
     delay(4);
   }
 
@@ -69,12 +71,12 @@ void setup() {
 
 void loop() {
   y_temp = x;
-  for (i = 0; i < num_sections; i++) {
+  for (int i = 0; i < num_sections; i++) {
     directForm2(y_temp, b[i], a[i], signal_length, *g[i], y_out); // Dereference g[i]
     y_temp = y_out;
   }
 
-  for (i = 0; i < signal_length; i++) {
+  for ( int i = 0; i < signal_length; i++) {
     Serial.print(i);
     Serial.print(" ");
     Serial.print(x[i]);
@@ -82,15 +84,17 @@ void loop() {
     Serial.print(y_out[i]);
     Serial.println("");
 
-    // Use the filtered output to control the buzzer
-    if (y_out[i] > 0.5) { // Example threshold
+    // Used the filtered output to control the buzzer and led
+    if (y_out[i] > 0.5) { // Observed and choosen threshold
       digitalWrite(buzzerPin, HIGH);
+      digitalWrite(ledPin, HIGH);
       lcd.setCursor(0, 1);
-      lcd.print("Status: HIGH    ");
+      lcd.print("Status: Detected    ");
     } else {
       digitalWrite(buzzerPin, LOW);
+      digitalWrite(ledPin, LOW);
       lcd.setCursor(0, 1);
-      lcd.print("Status: LOW     ");
+      lcd.print("Status: Normal     ");
     }
   }
 }
